@@ -1,0 +1,19 @@
+.form {
+  background-color: rgb(224, 224, 216);
+}
+
+.label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input {
+  margin-bottom: 20px;
+  width: 300px;
+}
+
+.btn {
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+}
