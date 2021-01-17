@@ -1,10 +1,13 @@
 import { useForm } from 'react-hook-form';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { getContacts } from '../../redux/contacts/contacts-selectors';
 import { addContact } from '../../redux/contacts/contacts-actions';
-import PropTypes from 'prop-types';
 import s from './ContactForm.module.css';
 
-const ContactForm = ({ contacts, handleFormSubmit }) => {
+const ContactForm = () => {
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
+
   const { register, handleSubmit, errors } = useForm();
   const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
@@ -19,8 +22,7 @@ const ContactForm = ({ contacts, handleFormSubmit }) => {
       return;
     }
 
-    handleFormSubmit({ name, number });
-
+    dispatch(addContact({ name, number }));
     e.target.reset();
   };
 
@@ -39,7 +41,7 @@ const ContactForm = ({ contacts, handleFormSubmit }) => {
         type="text"
         ref={register({ required: true })}
       />
-      {errors.name && 'This field is required!'}
+      {errors.name && <p className={s.text}>This field is required!</p>}
       <label className={s.label} htmlFor="number">
         Number
       </label>
@@ -48,12 +50,14 @@ const ContactForm = ({ contacts, handleFormSubmit }) => {
         name="number"
         type="text"
         ref={register({
-          required: 'This field is required!',
+          required: true,
           pattern: phoneRegExp,
         })}
       />
-      {errors.number?.message}
-      {errors.number?.type === 'pattern' && 'Phone number is not valid!'}
+      {errors.number && <p className={s.text}>This field is required!</p>}
+      {errors.number?.type === 'pattern' && (
+        <p className={s.text}>Phone number is not valid!</p>
+      )}
       <button className={s.btn} type="submit">
         Add contact
       </button>
@@ -61,19 +65,4 @@ const ContactForm = ({ contacts, handleFormSubmit }) => {
   );
 };
 
-ContactForm.propTypes = {
-  contacts: PropTypes.array.isRequired,
-  handleFormSubmit: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = ({ items }) => ({
-  contacts: items,
-});
-
-const mapDispatchToProps = dispatch => ({
-  handleFormSubmit: ({ name, number }) => {
-    dispatch(addContact({ name, number }));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContactForm);
+export default ContactForm;
